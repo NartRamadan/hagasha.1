@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        body {
+            direction: rtl;
+            background-color: bisque;
+        }
+
+        td,
+        th {
+            border: 1px solid black;
+        }
+
+        .GridContainer {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-gap: 10px;
+        }
+
+        .GridContainer label,
+        .GridContainer input {
+            display: block;
+        }
+
+        .GridContainer button,
+        .GridContainer h1 {
+            grid-column: 1 /span 2;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>רשימת הספרים שלי</h1>
+    <table>
+        <thead>
+            <tr>
+                <input type="text" oninput="getFiltered()" id="filt_txt" placeholder="סינון בשם ספר" />
+                <button onclick="getFiltered()">סנן</button>
+            </tr>
+            <tr>
+                <th>הספר</th>
+                <th>שם הסופר</th>
+                <th>כמות עותקים</th>
+            </tr>
+        </thead>
+        <tbody id="MainTable">
+        </tbody>
+    </table>
+    <div class="GridContainer">
+        <h1>הוספת ספר חדש</h1>
+        <label for="BookName">שם ספר</label>
+        <input type="text" id="BookName">
+        <label for="AtName">שם סופר</label>
+        <input type="text" id="AtName">
+        <label for="BookCnt">כמות עותקים</label>
+        <input type="text" id="BookCnt">
+        <button onclick="AddNewBook()">שמור</button>
+    </div>
+    <script>
+        let books = [
+            { name: "סי בסביבת ארדואינו", author: "אמיר", Copies: 1 },
+            { name: "סישארפ למתחילים", author: "ויליאם", Copies: 3 },
+            { name: "אתרי אינטרנט יפים", author: "אמיר", Copies: 9 },
+        ];
+
+        // let Author_to_file="אמיר";
+        // let booksToShow=books.filter(AuthorIsGood);
+        let BookFilt = "";
+        let booksToShow = books;
+        function getFiltered() {
+            BookFilt = document.getElementById("filt_txt").value;
+            booksToShow = books.filter(FilterData);
+            FillTable();
+        }
+        function FilterData(txt) {
+            return txt.name.includes(BookFilt);
+        }
+        function AuthorIsGood(atr) {
+            if (atr.author === Author_to_file) {
+                return true;
+            }
+            return false;
+        }
+        function FillTable() {
+            // ?? - null and undefined
+            // || - null or undefined or false and Nan
+            let allBooks = JSON.parse(localStorage.getItem("MyBooks")) ?? booksToShow
+
+            let s = "";
+            for (let book of allBooks) {
+                s += "<tr>";
+                // s+="<td>" + book.name + "</td>";
+                s += `<td>${book.name}</td>`;
+                s += `<td>${book.author}</td>`;
+                s += `<td>${book.Copies}</td>`;
+                s += "</tr>";
+                // console.log(s);
+            }
+            document.getElementById("MainTable").innerHTML = s;
+        }
+        function AddNewBook() {
+            let book = {};
+            book.name = document.getElementById("BookName").value;
+            book.author = document.getElementById("AtName").value;
+            book.Copies = Number(document.getElementById("BookCnt").value);
+            books.push(book);
+            localStorage.setItem("MyBooks", JSON.stringify(books));
+            getFiltered();
+        }
+        FillTable();
+    </script>
+</body>
+
+</html>
